@@ -1,0 +1,22 @@
+{
+  "short_name": "Savoria",
+  "name": "Savoria | Gourmet Food Delivery & Artisan Dining",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=192&q=80",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=512&q=80",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0B0E14",
+  "theme_color": "#FF4D4D",
+  "display": "standalone",
+  "orientation": "portrait",
+  "description": "Experience luxury food delivery from top-rated restaurants with instant tracking and AI recommendations."
+}
