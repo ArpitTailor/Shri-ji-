@@ -19,6 +19,8 @@ import NotificationsModal from './components/NotificationsModal';
 import AdminModal from './components/AdminModal';
 import LocationModal from './components/LocationModal';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 export default function App() {
   // Theme & Location
   const [theme, setTheme] = useState(() => localStorage.getItem('savoria_theme') || 'dark');
@@ -131,7 +133,7 @@ export default function App() {
 
   const fetchRestaurants = async () => {
     try {
-      const res = await fetch('/api/restaurants');
+      const res = await fetch(`${API_BASE}/api/restaurants`);
       if (res.ok) {
         const data = await res.json();
         setRestaurants(data);
@@ -143,7 +145,7 @@ export default function App() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/categories');
+      const res = await fetch(`${API_BASE}/api/categories`);
       if (res.ok) {
         const data = await res.json();
         setCategories(data);
@@ -155,7 +157,7 @@ export default function App() {
 
   const fetchAiRecommendations = async () => {
     try {
-      const res = await fetch('/api/ai/recommendations');
+      const res = await fetch(`${API_BASE}/api/ai/recommendations`);
       if (res.ok) {
         const data = await res.json();
         setAiData(data);
@@ -167,7 +169,7 @@ export default function App() {
 
   const fetchUserProfile = async (authToken) => {
     try {
-      const res = await fetch('/api/auth/me', {
+      const res = await fetch(`${API_BASE}/api/auth/me`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
       if (res.ok) {
@@ -186,7 +188,7 @@ export default function App() {
   const fetchAllOrdersAdmin = async () => {
     if (!token || !user || user.role !== 'admin') return;
     try {
-      const res = await fetch('/api/admin/dashboard', {
+      const res = await fetch(`${API_BASE}/api/admin/dashboard`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -201,7 +203,7 @@ export default function App() {
   // Auth Handlers
   const handleLogin = async (email, password) => {
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -229,7 +231,7 @@ export default function App() {
 
   const handleRegister = async (name, email, password) => {
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })
@@ -371,7 +373,7 @@ export default function App() {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const res = await fetch('/api/orders', {
+      const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload)
@@ -396,7 +398,7 @@ export default function App() {
   // Admin Handlers
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await fetch(`/api/admin/orders/${orderId}/status`, {
+      const res = await fetch(`${API_BASE}/api/admin/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -415,7 +417,7 @@ export default function App() {
 
   const handleAddRestaurant = async (restData) => {
     try {
-      const res = await fetch('/api/admin/restaurants', {
+      const res = await fetch(`${API_BASE}/api/admin/restaurants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -488,7 +490,7 @@ export default function App() {
     setSelectedRestId(id);
     setDetailedRestaurant(null);
     try {
-      const res = await fetch(`/api/restaurants/${id}`);
+      const res = await fetch(`${API_BASE}/api/restaurants/${id}`);
       if (res.ok) {
         const data = await res.json();
         setDetailedRestaurant(data);
