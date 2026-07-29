@@ -1,6 +1,6 @@
-# Savoria - AI-Powered Food Delivery Application
+# Shri ji - AI-Powered Food Delivery Application
 
-Savoria is a modern, high-performance food delivery application featuring a dynamic React frontend and a scalable Python/Flask backend. It incorporates an advanced AI Recommendation Engine, real-time caching, and a fully functional Progressive Web App (PWA) architecture.
+Shri ji is a modern, high-performance food delivery application featuring a dynamic React frontend and a scalable Python/Flask backend. It incorporates an advanced AI Recommendation Engine, real-time caching, and a fully functional Progressive Web App (PWA) architecture.
 
 ## 🚀 Features
 
