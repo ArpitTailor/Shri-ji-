@@ -23,31 +23,31 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 export default function App() {
   // Theme & Location
-  const [theme, setTheme] = useState(() => localStorage.getItem('savoria_theme') || 'dark');
-  const [locationText, setLocationText] = useState(() => localStorage.getItem('savoria_location') || 'Downtown, Tech District');
+  const [theme, setTheme] = useState(() => localStorage.getItem('shri_ji_theme') || 'dark');
+  const [locationText, setLocationText] = useState(() => localStorage.getItem('shri_ji_location') || 'Downtown, Tech District');
   
   // Data State
   const [restaurants, setRestaurants] = useState([]);
   const [categories, setCategories] = useState([]);
   const [aiData, setAiData] = useState(null);
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('savoria_user_data');
+    const saved = localStorage.getItem('shri_ji_user_data');
     return saved ? JSON.parse(saved) : null;
   });
-  const [token, setToken] = useState(() => localStorage.getItem('savoria_token') || null);
+  const [token, setToken] = useState(() => localStorage.getItem('shri_ji_token') || null);
   const [orders, setOrders] = useState([]);
   const [wishlist, setWishlist] = useState(() => {
-    const saved = localStorage.getItem('savoria_wishlist');
+    const saved = localStorage.getItem('shri_ji_wishlist');
     return new Set(saved ? JSON.parse(saved) : [1, 3]);
   });
   const [notifications, setNotifications] = useState([
-    { title: 'Welcome to Savoria!', message: 'Explore artisan kitchens and enjoy 20% off your first gourmet delivery.' },
+    { title: 'Welcome to Shri Ji!', message: 'Explore artisan kitchens and enjoy 20% off your first gourmet delivery.' },
     { title: 'Live AI Pairing Ready', message: 'Check out our AI recommendations tailored for your evening dining.' }
   ]);
   
   // Cart State
   const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('savoria_cart');
+    const saved = localStorage.getItem('shri_ji_cart');
     return saved ? JSON.parse(saved) : { items: [], restaurant_id: null, restaurant_name: null, discountAmount: 0, appliedCoupon: null };
   });
 
@@ -77,21 +77,21 @@ export default function App() {
   // Apply theme to html tag
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('savoria_theme', theme);
+    localStorage.setItem('shri_ji_theme', theme);
   }, [theme]);
 
   // Save location to localStorage
   useEffect(() => {
-    localStorage.setItem('savoria_location', locationText);
+    localStorage.setItem('shri_ji_location', locationText);
   }, [locationText]);
 
   // Save wishlist & cart
   useEffect(() => {
-    localStorage.setItem('savoria_wishlist', JSON.stringify(Array.from(wishlist)));
+    localStorage.setItem('shri_ji_wishlist', JSON.stringify(Array.from(wishlist)));
   }, [wishlist]);
 
   useEffect(() => {
-    localStorage.setItem('savoria_cart', JSON.stringify(cart));
+    localStorage.setItem('shri_ji_cart', JSON.stringify(cart));
   }, [cart]);
 
   // PWA Prompt handling
@@ -112,7 +112,7 @@ export default function App() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
-      showToast("Thank you for installing Savoria App!");
+      showToast("Thank you for installing Shri Ji App!");
     }
     setDeferredPrompt(null);
   };
@@ -176,7 +176,7 @@ export default function App() {
         const data = await res.json();
         setUser(data.user);
         setOrders(data.orders || []);
-        localStorage.setItem('savoria_user_data', JSON.stringify(data.user));
+        localStorage.setItem('shri_ji_user_data', JSON.stringify(data.user));
       } else {
         handleLogout();
       }
@@ -212,8 +212,8 @@ export default function App() {
       if (res.ok && data.token) {
         setToken(data.token);
         setUser(data.user);
-        localStorage.setItem('savoria_token', data.token);
-        localStorage.setItem('savoria_user_data', JSON.stringify(data.user));
+        localStorage.setItem('shri_ji_token', data.token);
+        localStorage.setItem('shri_ji_user_data', JSON.stringify(data.user));
         setIsAuthOpen(false);
         showToast(`Welcome back, ${data.user.name}!`);
         if (data.user.role === 'admin') {
@@ -240,8 +240,8 @@ export default function App() {
       if (res.ok && data.token) {
         setToken(data.token);
         setUser(data.user);
-        localStorage.setItem('savoria_token', data.token);
-        localStorage.setItem('savoria_user_data', JSON.stringify(data.user));
+        localStorage.setItem('shri_ji_token', data.token);
+        localStorage.setItem('shri_ji_user_data', JSON.stringify(data.user));
         setIsAuthOpen(false);
         showToast(`Account created successfully! Welcome, ${data.user.name}!`);
       } else {
@@ -256,8 +256,8 @@ export default function App() {
     setToken(null);
     setUser(null);
     setOrders([]);
-    localStorage.removeItem('savoria_token');
-    localStorage.removeItem('savoria_user_data');
+    localStorage.removeItem('shri_ji_token');
+    localStorage.removeItem('shri_ji_user_data');
     showToast('You have been logged out.');
   };
 
@@ -339,10 +339,10 @@ export default function App() {
   };
 
   const handleApplyCoupon = (code, subtotal) => {
-    if (code === 'SAVORIA20') {
+    if (code === 'SHRIJI20') {
       const discount = subtotal * 0.20;
       setCart(prev => ({ ...prev, discountAmount: discount, appliedCoupon: code }));
-      showToast('Coupon SAVORIA20 applied! 20% OFF');
+      showToast('Coupon SHRIJI20 applied! 20% OFF');
     } else if (code === 'GOURMET10') {
       const discount = subtotal * 0.10;
       setCart(prev => ({ ...prev, discountAmount: discount, appliedCoupon: code }));

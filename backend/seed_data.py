@@ -27,7 +27,7 @@ def seed():
     cur.execute("""
         INSERT INTO users (name, email, password_hash, role, phone, address, avatar)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, ("Savoria Admin", "admin@savoria.com", admin_hash, "admin", "+1 (555) 999-0000", "HQ Tower 1, Tech District", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80"))
+    """, ("Shri Ji Admin", "admin@shriji.com", admin_hash, "admin", "+1 (555) 999-0000", "HQ Tower 1, Tech District", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80"))
 
     # 2. Seed Categories
     categories_data = [
@@ -392,7 +392,7 @@ def seed():
         # Burger Dishes
         ("The Sizzle & Smash Burger", [
             ("Double Truffle Smash Burger", "Two smash patties, truffle aioli, melted Swiss, crispy shallots, brioche bun.", 139, False, True, 4.9, "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80", "Medium", 780),
-            ("Smokey Bacon & Cheddar Monster", "Angus beef patty, applewood smoked bacon, sharp cheddar, Savoria sauce.", 70, False, True, 4.8, "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=800&q=80", "Medium", 840),
+            ("Smokey Bacon & Cheddar Monster", "Angus beef patty, applewood smoked bacon, sharp cheddar, Shri Ji sauce.", 70, False, True, 4.8, "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=800&q=80", "Medium", 840),
             ("Spicy Nashville Hot Chicken Burger", "Crispy fried chicken thigh dipped in chili oil, dill pickles, slaw.", 266, False, True, 4.9, "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?auto=format&fit=crop&w=800&q=80", "Spicy", 710),
             ("Beyond Plant Smash Burger", "Plant-based patty, vegan cheddar, caramelized onions, house pickle.", 252, True, False, 4.7, "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80", "Mild", 560)
         ]),
@@ -586,7 +586,7 @@ def seed():
 
     # 5. Seed Coupons
     coupons = [
-        ("SAVORIA20", 20, 15.00, 20.00),
+        ("SHRIJI20", 20, 15.00, 20.00),
         ("FIRST50", 50, 25.00, 30.00),
         ("FEAST15", 15, 10.00, 15.00),
         ("FREEDEL", 100, 5.00, 0.00)
@@ -596,7 +596,7 @@ def seed():
 
     # 6. Seed Sample Notifications
     notifications = [
-        (1, "Welcome to Savoria!", "Enjoy 20% off your first order using code SAVORIA20.", "promo"),
+        (1, "Welcome to Shri Ji!", "Enjoy 20% off your first order using code SHRIJI20.", "promo"),
         (1, "Order #SAV-9821 Delivered", "Your order from Lucia Woodfire Pizzeria was delivered successfully. Bon appétit!", "order")
     ]
     for uid, title, msg, ntype in notifications:

@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-default_db = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'savoria.db')
+default_db = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'shri_ji.db')
 DB_PATH = os.environ.get("DATABASE_PATH", default_db)
 if not os.path.isabs(DB_PATH):
     DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), DB_PATH)

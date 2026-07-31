@@ -8,7 +8,7 @@ export default function AiWidget({ aiData, onRefresh, onAddToCart }) {
       <section className="ai-widget-banner glass-panel">
         <div>
           <div className="ai-badge">
-            <i className="fa-solid fa-wand-magic-sparkles"></i> Savoria AI Assistant
+            <i className="fa-solid fa-wand-magic-sparkles"></i> Shri Ji AI Assistant
           </div>
           <h2 style={{ fontSize: '1.6rem', marginBottom: '6px' }}>
             {aiData.meal_context ? aiData.meal_context.title : 'Personalized Suggestions For You'}

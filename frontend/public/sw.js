@@ -1,5 +1,5 @@
-// Savoria Service Worker for PWA
-const CACHE_NAME = 'savoria-react-cache-v1';
+// Shri Ji Service Worker for PWA
+const CACHE_NAME = 'shri-ji-react-cache-v1';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

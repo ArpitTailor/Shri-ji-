@@ -81,7 +81,7 @@ export default function Navbar({
             className="btn-primary" 
             onClick={onInstallPwa} 
             style={{ background: 'linear-gradient(135deg, var(--accent-green), #059669)', padding: '8px 16px', fontSize: '0.85rem' }} 
-            title="Install Savoria App"
+            title="Install Shri Ji App"
           >
             <FaMobileAlt style={{ marginRight: '6px' }} /> Install App
           </button>

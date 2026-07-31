@@ -66,7 +66,7 @@ export default function CartDrawer({
         <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
           <input 
             type="text" 
-            placeholder="Promo Code (SAVORIA20)" 
+            placeholder="Promo Code (SHRIJI20)" 
             value={couponInput}
             onChange={(e) => setCouponInput(e.target.value)}
             style={{

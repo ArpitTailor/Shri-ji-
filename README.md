@@ -22,7 +22,7 @@ Shri ji is a modern, high-performance food delivery application featuring a dyna
   - LRU Caching decorators for heavy read endpoints (categories, restaurants, dishes).
   - WAL Mode enabled in SQLite for concurrent reads/writes.
 - **Production Server:** Configured with `waitress` for high-concurrency production serving (`serve.py`).
-- **Database:** SQLite (`savoria.db`) with structured tables for Users, Orders, Food Items, Categories, and Admin metrics.
+- **Database:** SQLite (`shri_ji.db`) with structured tables for Users, Orders, Food Items, Categories, and Admin metrics.
 
 ### 🛒 Core Functionality
 - **User Authentication:** Secure JWT/Bearer-token-like auth and password hashing.
@@ -50,7 +50,7 @@ shree-ji/
 │   ├── serve.py           # Waitress production server script
 │   ├── seed_data.py       # Initial database population script
 │   ├── schema.sql         # SQL schema definitions
-│   └── savoria.db         # SQLite database
+│   └── shri_ji.db         # SQLite database
 ├── frontend/
 │   ├── src/               # React source code & components
 │   ├── public/            # Static assets

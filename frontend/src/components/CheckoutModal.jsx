@@ -8,7 +8,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, user, onPlaceOrde
     if (user && user.address) {
       setAddress(user.address);
     } else {
-      setAddress(localStorage.getItem('savoria_location') || 'Downtown, Tech District');
+      setAddress(localStorage.getItem('shri_ji_location') || 'Downtown, Tech District');
     }
   }, [user, isOpen]);
 

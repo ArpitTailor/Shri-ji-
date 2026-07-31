@@ -374,5 +374,5 @@ if __name__ == '__main__':
     host = os.environ.get("HOST", "0.0.0.0")
     port = int(os.environ.get("PORT", 5050))
     debug = os.environ.get("FLASK_DEBUG", "True").lower() in ("true", "1", "yes")
-    print(f"Launching Savoria Server on http://{host}:{port} (debug={debug})...")
+    print(f"Launching Shri Ji Server on http://{host}:{port} (debug={debug})...")
     app.run(debug=debug, host=host, port=port)

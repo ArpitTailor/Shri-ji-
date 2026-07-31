@@ -1,4 +1,4 @@
--- Schema for Savoria Food Delivery Platform
+-- Schema for Shri Ji Food Delivery Platform
 -- Compatible with SQLite and MySQL
 
 CREATE TABLE IF NOT EXISTS users (

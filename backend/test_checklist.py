@@ -25,7 +25,7 @@ class TestVerificationChecklist(unittest.TestCase):
         # Test Register
         reg_res = self.client.post('/api/auth/register', json={
             'name': 'Verification Tester',
-            'email': 'verify_test@savoria.com',
+            'email': 'verify_test@shriji.com',
             'password': 'password123',
             'phone': '9876543210',
             'address': '123 Tech Park'
@@ -128,7 +128,7 @@ class TestVerificationChecklist(unittest.TestCase):
     # Checklist Item 8: Coupons Verification API
     def test_08_coupons_verify(self):
         # Valid coupon
-        res = self.client.post('/api/coupons/verify', json={'code': 'SAVORIA20', 'amount': 40.0})
+        res = self.client.post('/api/coupons/verify', json={'code': 'SHRIJI20', 'amount': 40.0})
         self.assertEqual(res.status_code, 200)
         coupon_data = res.get_json()
         self.assertTrue(coupon_data['valid'])
@@ -141,7 +141,7 @@ class TestVerificationChecklist(unittest.TestCase):
     def test_09_admin_dashboard_and_management(self):
         # Admin login
         login_res = self.client.post('/api/auth/login', json={
-            'email': 'admin@savoria.com',
+            'email': 'admin@shriji.com',
             'password': 'admin123'
         })
         self.assertEqual(login_res.status_code, 200)
