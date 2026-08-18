@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import './index.css';
 
 // Components
@@ -19,80 +20,42 @@ import NotificationsModal from './components/NotificationsModal';
 import AdminModal from './components/AdminModal';
 import LocationModal from './components/LocationModal';
 
+// Redux Actions
+import {
+  setTheme, setLocationText, showToast, hideToast,
+  setSearchQuery, setActiveCategory, setActiveFilter, setActiveSort,
+  toggleModal
+} from './store/uiSlice';
+import { setCredentials, logout } from './store/authSlice';
+import { addToCart, updateQty, applyCoupon, clearCart } from './store/cartSlice';
+import {
+  setRestaurants, setCategories, setAiData, setOrders, addOrder, updateOrderStatus,
+  addRestaurant, toggleWishlist, clearNotifications, setSelectedRestId, setDetailedRestaurant, setActiveTrackingOrder
+} from './store/dataSlice';
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 export default function App() {
-  // Theme & Location
-  const [theme, setTheme] = useState(() => localStorage.getItem('shri_ji_theme') || 'dark');
-  const [locationText, setLocationText] = useState(() => localStorage.getItem('shri_ji_location') || 'Downtown, Tech District');
+  const dispatch = useDispatch();
   
-  // Data State
-  const [restaurants, setRestaurants] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [aiData, setAiData] = useState(null);
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('shri_ji_user_data');
-    return saved ? JSON.parse(saved) : null;
-  });
-  const [token, setToken] = useState(() => localStorage.getItem('shri_ji_token') || null);
-  const [orders, setOrders] = useState([]);
-  const [wishlist, setWishlist] = useState(() => {
-    const saved = localStorage.getItem('shri_ji_wishlist');
-    return new Set(saved ? JSON.parse(saved) : [1, 3]);
-  });
-  const [notifications, setNotifications] = useState([
-    { title: 'Welcome to Shri Ji!', message: 'Explore artisan kitchens and enjoy 20% off your first gourmet delivery.' },
-    { title: 'Live AI Pairing Ready', message: 'Check out our AI recommendations tailored for your evening dining.' }
-  ]);
-  
+  // UI State
+  const { theme, locationText, toastMessage, searchQuery, activeCategory, activeFilter, activeSort, modals } = useSelector(state => state.ui);
+
+  // Auth State
+  const { user, token } = useSelector(state => state.auth);
+
   // Cart State
-  const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('shri_ji_cart');
-    return saved ? JSON.parse(saved) : { items: [], restaurant_id: null, restaurant_name: null, discountAmount: 0, appliedCoupon: null };
-  });
+  const cart = useSelector(state => state.cart);
 
-  // Filters & Search
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [activeSort, setActiveSort] = useState('relevance');
+  // Data State
+  const { restaurants, categories, aiData, orders, wishlist, notifications, selectedRestId, detailedRestaurant, activeTrackingOrder } = useSelector(state => state.data);
 
-  // Modals & Drawers
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [isLocationOpen, setIsLocationOpen] = useState(false);
-  const [selectedRestId, setSelectedRestId] = useState(null);
-  const [detailedRestaurant, setDetailedRestaurant] = useState(null);
-  const [activeTrackingOrder, setActiveTrackingOrder] = useState(null);
-
-  // Toast & PWA
-  const [toastMessage, setToastMessage] = useState('');
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
-  // Apply theme to html tag
+  // Apply theme
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('shri_ji_theme', theme);
   }, [theme]);
-
-  // Save location to localStorage
-  useEffect(() => {
-    localStorage.setItem('shri_ji_location', locationText);
-  }, [locationText]);
-
-  // Save wishlist & cart
-  useEffect(() => {
-    localStorage.setItem('shri_ji_wishlist', JSON.stringify(Array.from(wishlist)));
-  }, [wishlist]);
-
-  useEffect(() => {
-    localStorage.setItem('shri_ji_cart', JSON.stringify(cart));
-  }, [cart]);
 
   // PWA Prompt handling
   useEffect(() => {
@@ -106,19 +69,19 @@ export default function App() {
 
   const handleInstallPwa = async () => {
     if (!deferredPrompt) {
-      showToast("App install prompt not available or app already installed.");
+      dispatch(showToast("App install prompt not available or app already installed."));
       return;
     }
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
-      showToast("Thank you for installing Shri Ji App!");
+      dispatch(showToast("Thank you for installing Shri Ji App!"));
     }
     setDeferredPrompt(null);
   };
 
-  const showToast = (msg) => {
-    setToastMessage(msg);
+  const handleShowToast = (msg) => {
+    dispatch(showToast(msg));
   };
 
   // Fetch Initial Data
@@ -136,7 +99,7 @@ export default function App() {
       const res = await fetch(`${API_BASE}/api/restaurants`);
       if (res.ok) {
         const data = await res.json();
-        setRestaurants(data);
+        dispatch(setRestaurants(data));
       }
     } catch (err) {
       console.error('Error fetching restaurants:', err);
@@ -148,7 +111,7 @@ export default function App() {
       const res = await fetch(`${API_BASE}/api/categories`);
       if (res.ok) {
         const data = await res.json();
-        setCategories(data);
+        dispatch(setCategories(data));
       }
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -160,7 +123,7 @@ export default function App() {
       const res = await fetch(`${API_BASE}/api/ai/recommendations`);
       if (res.ok) {
         const data = await res.json();
-        setAiData(data);
+        dispatch(setAiData(data));
       }
     } catch (err) {
       console.error('Error fetching AI recommendations:', err);
@@ -174,9 +137,8 @@ export default function App() {
       });
       if (res.ok) {
         const data = await res.json();
-        setUser(data.user);
-        setOrders(data.orders || []);
-        localStorage.setItem('shri_ji_user_data', JSON.stringify(data.user));
+        dispatch(setCredentials({ user: data.user, token: authToken }));
+        dispatch(setOrders(data.orders || []));
       } else {
         handleLogout();
       }
@@ -193,7 +155,7 @@ export default function App() {
       });
       if (res.ok) {
         const data = await res.json();
-        setOrders(data.recent_orders || []);
+        dispatch(setOrders(data.recent_orders || []));
       }
     } catch (err) {
       console.error('Error fetching admin orders:', err);
@@ -210,22 +172,19 @@ export default function App() {
       });
       const data = await res.json();
       if (res.ok && data.token) {
-        setToken(data.token);
-        setUser(data.user);
-        localStorage.setItem('shri_ji_token', data.token);
-        localStorage.setItem('shri_ji_user_data', JSON.stringify(data.user));
-        setIsAuthOpen(false);
-        showToast(`Welcome back, ${data.user.name}!`);
+        dispatch(setCredentials({ user: data.user, token: data.token }));
+        dispatch(toggleModal({ modalName: 'auth', isOpen: false }));
+        handleShowToast(`Welcome back, ${data.user.name}!`);
         if (data.user.role === 'admin') {
           fetchAllOrdersAdmin();
         } else {
           fetchUserProfile(data.token);
         }
       } else {
-        showToast(data.error || 'Login failed');
+        handleShowToast(data.error || 'Login failed');
       }
     } catch (err) {
-      showToast('Network error during login');
+      handleShowToast('Network error during login');
     }
   };
 
@@ -238,127 +197,77 @@ export default function App() {
       });
       const data = await res.json();
       if (res.ok && data.token) {
-        setToken(data.token);
-        setUser(data.user);
-        localStorage.setItem('shri_ji_token', data.token);
-        localStorage.setItem('shri_ji_user_data', JSON.stringify(data.user));
-        setIsAuthOpen(false);
-        showToast(`Account created successfully! Welcome, ${data.user.name}!`);
+        dispatch(setCredentials({ user: data.user, token: data.token }));
+        dispatch(toggleModal({ modalName: 'auth', isOpen: false }));
+        handleShowToast(`Account created successfully! Welcome, ${data.user.name}!`);
       } else {
-        showToast(data.error || 'Registration failed');
+        handleShowToast(data.error || 'Registration failed');
       }
     } catch (err) {
-      showToast('Network error during registration');
+      handleShowToast('Network error during registration');
     }
   };
 
   const handleLogout = () => {
-    setToken(null);
-    setUser(null);
-    setOrders([]);
-    localStorage.removeItem('shri_ji_token');
-    localStorage.removeItem('shri_ji_user_data');
-    showToast('You have been logged out.');
+    dispatch(logout());
+    dispatch(setOrders([]));
+    handleShowToast('You have been logged out.');
   };
 
   // Wishlist Handler
   const handleToggleWishlist = (restId) => {
-    setWishlist(prev => {
-      const next = new Set(prev);
-      if (next.has(restId)) {
-        next.delete(restId);
-        showToast('Removed from wishlist');
-      } else {
-        next.add(restId);
-        showToast('Added to wishlist');
-      }
-      return next;
-    });
+    dispatch(toggleWishlist(restId));
+    if (wishlist.includes(restId)) {
+        handleShowToast('Removed from wishlist');
+    } else {
+        handleShowToast('Added to wishlist');
+    }
   };
 
   // Cart Handlers
   const handleAddToCart = (itemId, itemName, itemPrice, restId, restName) => {
-    setCart(prev => {
-      // Check if ordering from a different kitchen
-      if (prev.restaurant_id && prev.restaurant_id !== restId && prev.items.length > 0) {
-        if (!window.confirm(`Your cart contains items from ${prev.restaurant_name}. Clear cart and add from ${restName}?`)) {
-          return prev;
-        }
-        const newCart = {
-          items: [{ id: itemId, name: itemName, price: itemPrice, qty: 1 }],
-          restaurant_id: restId,
-          restaurant_name: restName,
-          discountAmount: 0,
-          appliedCoupon: null
-        };
-        showToast(`Added ${itemName} to cart`);
-        return newCart;
+    if (cart.restaurant_id && cart.restaurant_id !== restId && cart.items.length > 0) {
+      if (!window.confirm(`Your cart contains items from ${cart.restaurant_name}. Clear cart and add from ${restName}?`)) {
+        return;
       }
-
-      const existingIndex = prev.items.findIndex(i => i.id === itemId);
-      let updatedItems;
-      if (existingIndex > -1) {
-        updatedItems = prev.items.map((item, idx) => 
-          idx === existingIndex ? { ...item, qty: item.qty + 1 } : item
-        );
-      } else {
-        updatedItems = [...prev.items, { id: itemId, name: itemName, price: itemPrice, qty: 1 }];
-      }
-
-      showToast(`Added ${itemName} to cart`);
-      return {
-        ...prev,
-        items: updatedItems,
-        restaurant_id: restId,
-        restaurant_name: restName
-      };
-    });
+      dispatch(addToCart({ itemId, itemName, itemPrice, restId, restName, override: true }));
+      handleShowToast(`Added ${itemName} to cart`);
+      return;
+    }
+    dispatch(addToCart({ itemId, itemName, itemPrice, restId, restName, override: false }));
+    handleShowToast(`Added ${itemName} to cart`);
   };
 
   const handleBuyNow = (itemId, itemName, itemPrice, restId, restName) => {
     handleAddToCart(itemId, itemName, itemPrice, restId, restName);
-    setIsCartOpen(true);
+    dispatch(toggleModal({ modalName: 'cart', isOpen: true }));
   };
 
   const handleUpdateQty = (itemId, change) => {
-    setCart(prev => {
-      const updatedItems = prev.items
-        .map(i => i.id === itemId ? { ...i, qty: i.qty + change } : i)
-        .filter(i => i.qty > 0);
-      
-      const isCartEmpty = updatedItems.length === 0;
-      return {
-        ...prev,
-        items: updatedItems,
-        restaurant_id: isCartEmpty ? null : prev.restaurant_id,
-        restaurant_name: isCartEmpty ? null : prev.restaurant_name,
-        discountAmount: isCartEmpty ? 0 : prev.discountAmount,
-        appliedCoupon: isCartEmpty ? null : prev.appliedCoupon
-      };
-    });
+    dispatch(updateQty({ itemId, change }));
   };
 
   const handleApplyCoupon = (code, subtotal) => {
     if (code === 'SHRIJI20') {
       const discount = subtotal * 0.20;
-      setCart(prev => ({ ...prev, discountAmount: discount, appliedCoupon: code }));
-      showToast('Coupon SHRIJI20 applied! 20% OFF');
+      dispatch(applyCoupon({ code, discount }));
+      handleShowToast('Coupon SHRIJI20 applied! 20% OFF');
     } else if (code === 'GOURMET10') {
       const discount = subtotal * 0.10;
-      setCart(prev => ({ ...prev, discountAmount: discount, appliedCoupon: code }));
-      showToast('Coupon GOURMET10 applied! 10% OFF');
+      dispatch(applyCoupon({ code, discount }));
+      handleShowToast('Coupon GOURMET10 applied! 10% OFF');
     } else {
-      showToast('Invalid or expired coupon code');
+      handleShowToast('Invalid or expired coupon code');
     }
   };
 
   const handleProceedToCheckout = () => {
     if (cart.items.length === 0) {
-      showToast('Your cart is empty');
+      handleShowToast('Your cart is empty');
       return;
     }
-    setIsCartOpen(false);
-    setIsCheckoutOpen(true);
+    dispatch(toggleModal({ modalName: 'cart', isOpen: false }));
+    dispatch(toggleModal({ modalName: 'checkout', isOpen: true }));
   };
 
   const handlePlaceOrder = async (orderPayload) => {
@@ -382,16 +291,16 @@ export default function App() {
       if (res.ok) {
         const data = await res.json();
         const createdOrder = data.order || data;
-        setIsCheckoutOpen(false);
-        setCart({ items: [], restaurant_id: null, restaurant_name: null, discountAmount: 0, appliedCoupon: null });
-        setOrders(prev => [createdOrder, ...prev]);
-        setActiveTrackingOrder(createdOrder);
-        showToast(`Order Placed! #${createdOrder.order_code || createdOrder.id}`);
+        dispatch(toggleModal({ modalName: 'checkout', isOpen: false }));
+        dispatch(clearCart());
+        dispatch(addOrder(createdOrder));
+        dispatch(setActiveTrackingOrder(createdOrder));
+        handleShowToast(`Order Placed! #${createdOrder.order_code || createdOrder.id}`);
       } else {
-        showToast('Failed to place order. Please try again.');
+        handleShowToast('Failed to place order. Please try again.');
       }
     } catch (err) {
-      showToast('Network error while placing order');
+      handleShowToast('Network error while placing order');
     }
   };
 
@@ -407,11 +316,11 @@ export default function App() {
         body: JSON.stringify({ status: newStatus })
       });
       if (res.ok) {
-        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-        showToast(`Order #${orderId} status updated to ${newStatus}`);
+        dispatch(updateOrderStatus({ orderId, status: newStatus }));
+        handleShowToast(`Order #${orderId} status updated to ${newStatus}`);
       }
     } catch (err) {
-      showToast('Error updating status');
+      handleShowToast('Error updating status');
     }
   };
 
@@ -428,14 +337,14 @@ export default function App() {
       if (res.ok) {
         const data = await res.json();
         const newRest = { ...restData, id: data.id || Date.now() };
-        setRestaurants(prev => [newRest, ...prev]);
-        setIsAdminOpen(false);
-        showToast(`Successfully published kitchen: ${newRest.name}`);
+        dispatch(addRestaurant(newRest));
+        dispatch(toggleModal({ modalName: 'admin', isOpen: false }));
+        handleShowToast(`Successfully published kitchen: ${newRest.name}`);
       } else {
-        showToast('Error creating restaurant');
+        handleShowToast('Error creating restaurant');
       }
     } catch (err) {
-      showToast('Network error creating restaurant');
+      handleShowToast('Network error creating restaurant');
     }
   };
 
@@ -443,7 +352,6 @@ export default function App() {
   const filteredAndSortedRestaurants = useMemo(() => {
     let result = [...restaurants];
 
-    // Search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(r => 
@@ -453,7 +361,6 @@ export default function App() {
       );
     }
 
-    // Category filter
     if (activeCategory !== 'all') {
       result = result.filter(r => 
         r.cuisine_type.toLowerCase().includes(activeCategory.toLowerCase()) ||
@@ -461,7 +368,6 @@ export default function App() {
       );
     }
 
-    // Quick filter bar
     if (activeFilter === 'veg') {
       result = result.filter(r => r.is_pure_veg || (r.menu && r.menu.every(m => m.is_veg)));
     } else if (activeFilter === 'rating') {
@@ -470,7 +376,6 @@ export default function App() {
       result = result.filter(r => r.delivery_time <= 25);
     }
 
-    // Sorting
     if (activeSort === 'rating') {
       result.sort((a, b) => b.rating - a.rating);
     } else if (activeSort === 'delivery_time') {
@@ -487,13 +392,13 @@ export default function App() {
   const selectedRestObj = restaurants.find(r => r.id === selectedRestId);
 
   const handleOpenRestaurant = async (id) => {
-    setSelectedRestId(id);
-    setDetailedRestaurant(null);
+    dispatch(setSelectedRestId(id));
+    dispatch(setDetailedRestaurant(null));
     try {
       const res = await fetch(`${API_BASE}/api/restaurants/${id}`);
       if (res.ok) {
         const data = await res.json();
-        setDetailedRestaurant(data);
+        dispatch(setDetailedRestaurant(data));
       }
     } catch (err) {
       console.error('Failed to fetch restaurant details:', err);
@@ -504,23 +409,23 @@ export default function App() {
     <div className="app-container">
       <Navbar
         theme={theme}
-        onToggleTheme={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+        onToggleTheme={() => dispatch(setTheme(theme === 'dark' ? 'light' : 'dark'))}
         locationText={locationText}
-        onOpenLocationModal={() => setIsLocationOpen(true)}
+        onOpenLocationModal={() => dispatch(toggleModal({ modalName: 'location', isOpen: true }))}
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        wishlistCount={wishlist.size}
-        onOpenWishlist={() => setIsWishlistOpen(true)}
+        onSearchChange={(val) => dispatch(setSearchQuery(val))}
+        wishlistCount={wishlist.length}
+        onOpenWishlist={() => dispatch(toggleModal({ modalName: 'wishlist', isOpen: true }))}
         cartCount={cart.items.reduce((sum, i) => sum + i.qty, 0)}
-        onToggleCart={() => setIsCartOpen(prev => !prev)}
+        onToggleCart={() => dispatch(toggleModal({ modalName: 'cart' }))}
         notifCount={notifications.length}
-        onOpenNotifications={() => setIsNotifOpen(true)}
+        onOpenNotifications={() => dispatch(toggleModal({ modalName: 'notifications', isOpen: true }))}
         user={user}
-        onOpenAuth={() => setIsAuthOpen(true)}
-        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenAuth={() => dispatch(toggleModal({ modalName: 'auth', isOpen: true }))}
+        onOpenProfile={() => dispatch(toggleModal({ modalName: 'profile', isOpen: true }))}
         onOpenAdmin={() => {
           fetchAllOrdersAdmin();
-          setIsAdminOpen(true);
+          dispatch(toggleModal({ modalName: 'admin', isOpen: true }));
         }}
         onLogout={handleLogout}
         canInstallPwa={!!deferredPrompt}
@@ -541,7 +446,7 @@ export default function App() {
           categories={categories}
           activeCategory={activeCategory}
           onSelectCategory={(slug) => {
-            setActiveCategory(slug);
+            dispatch(setActiveCategory(slug));
             const el = document.getElementById('restaurantGridSection');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
@@ -556,10 +461,10 @@ export default function App() {
         <RestaurantGrid
           restaurants={filteredAndSortedRestaurants}
           activeFilter={activeFilter}
-          onSelectFilter={setActiveFilter}
+          onSelectFilter={(val) => dispatch(setActiveFilter(val))}
           activeSort={activeSort}
-          onSelectSort={setActiveSort}
-          wishlist={wishlist}
+          onSelectSort={(val) => dispatch(setActiveSort(val))}
+          wishlist={new Set(wishlist)}
           onToggleWishlist={handleToggleWishlist}
           onOpenRestaurant={handleOpenRestaurant}
         />
@@ -569,14 +474,14 @@ export default function App() {
       <RestaurantModal
         isOpen={!!selectedRestId}
         restaurant={detailedRestaurant || selectedRestObj}
-        onClose={() => setSelectedRestId(null)}
+        onClose={() => dispatch(setSelectedRestId(null))}
         onAddToCart={handleAddToCart}
         onBuyNow={handleBuyNow}
       />
 
       <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
+        isOpen={modals.cart}
+        onClose={() => dispatch(toggleModal({ modalName: 'cart', isOpen: false }))}
         cart={cart}
         onUpdateQty={handleUpdateQty}
         onApplyCoupon={handleApplyCoupon}
@@ -584,8 +489,8 @@ export default function App() {
       />
 
       <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
+        isOpen={modals.checkout}
+        onClose={() => dispatch(toggleModal({ modalName: 'checkout', isOpen: false }))}
         cart={cart}
         user={user}
         onPlaceOrder={handlePlaceOrder}
@@ -593,66 +498,66 @@ export default function App() {
 
       <OrderTrackerModal
         isOpen={!!activeTrackingOrder}
-        onClose={() => setActiveTrackingOrder(null)}
+        onClose={() => dispatch(setActiveTrackingOrder(null))}
         order={activeTrackingOrder}
         onOrderDelivered={() => {
-          showToast('Order Delivered! Bon Appétit!');
+          handleShowToast('Order Delivered! Bon Appétit!');
         }}
       />
 
       <AuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
+        isOpen={modals.auth}
+        onClose={() => dispatch(toggleModal({ modalName: 'auth', isOpen: false }))}
         onLogin={handleLogin}
         onRegister={handleRegister}
       />
 
       <ProfileModal
-        isOpen={isProfileOpen}
-        onClose={() => setIsProfileOpen(false)}
+        isOpen={modals.profile}
+        onClose={() => dispatch(toggleModal({ modalName: 'profile', isOpen: false }))}
         user={user}
         orders={orders}
       />
 
       <WishlistModal
-        isOpen={isWishlistOpen}
-        onClose={() => setIsWishlistOpen(false)}
-        wishlist={wishlist}
+        isOpen={modals.wishlist}
+        onClose={() => dispatch(toggleModal({ modalName: 'wishlist', isOpen: false }))}
+        wishlist={new Set(wishlist)}
         restaurants={restaurants}
-        onOpenRestaurant={(id) => setSelectedRestId(id)}
+        onOpenRestaurant={(id) => dispatch(setSelectedRestId(id))}
         onToggleWishlist={handleToggleWishlist}
       />
 
       <NotificationsModal
-        isOpen={isNotifOpen}
-        onClose={() => setIsNotifOpen(false)}
+        isOpen={modals.notifications}
+        onClose={() => dispatch(toggleModal({ modalName: 'notifications', isOpen: false }))}
         notifications={notifications}
         onClear={() => {
-          setNotifications([]);
-          showToast('Notifications cleared');
+          dispatch(clearNotifications());
+          handleShowToast('Notifications cleared');
         }}
       />
 
       <AdminModal
-        isOpen={isAdminOpen}
-        onClose={() => setIsAdminOpen(false)}
+        isOpen={modals.admin}
+        onClose={() => dispatch(toggleModal({ modalName: 'admin', isOpen: false }))}
         orders={orders}
         onUpdateOrderStatus={handleUpdateOrderStatus}
         onAddRestaurant={handleAddRestaurant}
       />
 
       <LocationModal
-        isOpen={isLocationOpen}
-        onClose={() => setIsLocationOpen(false)}
+        isOpen={modals.location}
+        onClose={() => dispatch(toggleModal({ modalName: 'location', isOpen: false }))}
         currentLocation={locationText}
         onSelectLocation={(loc) => {
-          setLocationText(loc);
-          setIsLocationOpen(false);
-          showToast(`Location updated to ${loc}`);
+          dispatch(setLocationText(loc));
+          dispatch(toggleModal({ modalName: 'location', isOpen: false }));
+          handleShowToast(`Location updated to ${loc}`);
         }}
       />
 
-      <Toast message={toastMessage} onClose={() => setToastMessage('')} />
+      <Toast message={toastMessage} onClose={() => dispatch(hideToast())} />
     </div>
   );
 }
