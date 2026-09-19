@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaUtensils, FaMapMarkerAlt, FaChevronDown, FaSearch, FaSun, FaMoon, FaBell, FaHeart, FaShoppingBag, FaMobileAlt, FaUserShield, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { FaUtensils, FaMapMarkerAlt, FaChevronDown, FaSearch, FaSun, FaMoon, FaBell, FaHeart, FaShoppingBag, FaMobileAlt, FaUserShield, FaSignOutAlt, FaUser, FaAndroid } from 'react-icons/fa';
 
 export default function Navbar({
   theme,
@@ -75,13 +75,24 @@ export default function Navbar({
           <span className="badge-count">{cartCount}</span>
         </button>
 
+        {/* Download APK Button */}
+        <a 
+          href="/shri-ji-app.apk" 
+          download="Shri_Ji_App.apk"
+          className="btn-primary" 
+          style={{ background: 'linear-gradient(135deg, #3DDC84, #059669)', padding: '8px 16px', fontSize: '0.85rem', textDecoration: 'none', display: 'flex', alignItems: 'center' }} 
+          title="Download Android App"
+        >
+          <FaAndroid style={{ marginRight: '6px', fontSize: '1rem' }} /> Download APK
+        </a>
+
         {/* Install PWA App Button */}
         {canInstallPwa && (
           <button 
             className="btn-primary" 
             onClick={onInstallPwa} 
-            style={{ background: 'linear-gradient(135deg, var(--accent-green), #059669)', padding: '8px 16px', fontSize: '0.85rem' }} 
-            title="Install Shri Ji App"
+            style={{ background: 'linear-gradient(135deg, var(--accent-blue, #2563EB), #1D4ED8)', padding: '8px 16px', fontSize: '0.85rem' }} 
+            title="Install Shri Ji Web App"
           >
             <FaMobileAlt style={{ marginRight: '6px' }} /> Install App
           </button>
